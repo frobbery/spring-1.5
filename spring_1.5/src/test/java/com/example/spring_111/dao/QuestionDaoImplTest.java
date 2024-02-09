@@ -1,26 +1,37 @@
 package com.example.spring_111.dao;
 
+import com.example.spring_111.config.QuestionConfig;
 import com.example.spring_111.domain.QuestionWithAnswers;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.Map;
+import java.io.IOException;
+import java.net.URISyntaxException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @DisplayName("Класс QuestionDaoImpl")
+@ExtendWith(MockitoExtension.class)
 class QuestionDaoImplTest {
 
-    private final QuestionDaoImpl sut = new QuestionDaoImpl();
+    @Mock
+    private QuestionConfig questionConfig;
 
-    @DisplayName("Должен добавлять вопросы")
+    @InjectMocks
+    private QuestionDaoImpl sut;
+
     @Test
+    @DisplayName("Должен добавлять вопросы")
     void shouldAddQuestion() {
         //given
-        var question = question();
+        var question = mock(QuestionWithAnswers.class);
 
         //when
         sut.addQuestion(question);
@@ -29,11 +40,11 @@ class QuestionDaoImplTest {
         assertEquals(sut.getAllQuestions().size(), 1);
     }
 
-    @DisplayName("Должен выдавать все вопросы")
     @Test
+    @DisplayName("Должен выдавать все вопросы")
     void shouldGetAllQuestions() {
         //given
-        var question = question();
+        var question = mock(QuestionWithAnswers.class);
         sut.addQuestion(question);
 
         //when
@@ -45,12 +56,16 @@ class QuestionDaoImplTest {
                 .hasSize(1);
     }
 
-    private QuestionWithAnswers question() {
-        var enLocale = new Locale("en");
-        var ruLocale = new Locale("ru_Ru");
-        return new QuestionWithAnswers(Map.of(enLocale, "question", ruLocale, "вопрос"),
-                Map.of(enLocale, "answer1", ruLocale, "ответ1"),
-                Arrays.asList(Map.of(enLocale, "answer1", ruLocale, "ответ1"),
-                        Map.of(enLocale, "answer2", ruLocale, "ответ2")));
+    @Test
+    @DisplayName("Должен добавлять вопросы из файла")
+    void shouldAddQuestionsFromFile() throws IOException, URISyntaxException {
+        //given
+        when(questionConfig.getPath()).thenReturn("/example.csv");
+
+        //when
+        sut.addQuestionsFromFile();
+
+        //then
+        assertEquals(sut.getAllQuestions().size(), 2);
     }
 }
