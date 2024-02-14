@@ -1,3 +1,5 @@
 questions:
   path: /questions.csv
   number: 4
+initial-locale:
+  ru_ru

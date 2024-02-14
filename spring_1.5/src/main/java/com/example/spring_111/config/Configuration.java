@@ -8,7 +8,7 @@ import org.springframework.context.support.ResourceBundleMessageSource;
 
 @org.springframework.context.annotation.Configuration
 @EnableConfigurationProperties(QuestionConfig.class)
-@PropertySource(value = "/application.properties")
+@PropertySource(value = "/application.yml", factory = YamlPropertySourceFactory.class)
 public class Configuration {
     
     @Bean
